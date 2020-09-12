@@ -17,6 +17,7 @@ namespace TechnicalRadiation.WebApi.Controllers
     {
         private NewsItemService _newsItemService = new NewsItemService();
         private CategoryService _categoryService = new CategoryService();
+        private AuthorService _authorService = new AuthorService();
 
         // Unauthorized routes
 
@@ -53,6 +54,17 @@ namespace TechnicalRadiation.WebApi.Controllers
             return Ok(_categoryService.GetAllCategories());
         }
 
+        // Get category by id
+
+        // https://localhost:5001/api/categories [GET]
+        [HttpGet]
+        [Route("categories/{id:int}")]
+
+        public IActionResult GetCategoryById(int id)
+        {
+            return Ok(_categoryService.GetCategoryById(id));
+        }
+
         // Get all authors
 
         // https://localhost:5001/api/authors [GET]
@@ -61,7 +73,7 @@ namespace TechnicalRadiation.WebApi.Controllers
         
         public IActionResult GetAllAuthors()
         {
-            return Ok();
+            return Ok(_authorService.GetAllAuthors());
         }
 
         // Get author by id
@@ -72,7 +84,7 @@ namespace TechnicalRadiation.WebApi.Controllers
 
         public IActionResult GetAuthorById(int id)
         {
-            return Ok();
+            return Ok(_authorService.GetAuthorById(id));
         }
 
         // Get all news by author id
@@ -83,7 +95,7 @@ namespace TechnicalRadiation.WebApi.Controllers
 
         public IActionResult GetAllNewsByAuthor(int id)
         {
-            return Ok();
+            return Ok(_newsItemService.GetAllNewsItemsByAuthorId(id));
         }
 
 
