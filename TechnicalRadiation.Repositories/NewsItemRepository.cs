@@ -50,13 +50,26 @@ namespace TechnicalRadiation.Repositories
                                                     .Select(r => r.AuthorId);
         }
 
-        
-
         public NewsItemDetailDto GetNewsItemById(int newsItenId)
         {
             var entity = DataProvider.NewsItems.FirstOrDefault(r => r.Id == newsItenId);
             if (entity == null) {return null;}
             return ToNewsItemDetailDto(entity);
+        }
+
+        public IEnumerable<NewsItemDto> GetAllNewsItemsByAuthorId(int authorId)
+        {
+            
+            var entity =  
+                    from newsItem in DataProvider.NewsItems
+                    join NIAEnt in DataProvider.NIA 
+                    on newsItem.Id equals NIAEnt.NewsItemId
+                    where NIAEnt.AuthorId == authorId
+                    select ToNewsItemDto(newsItem);
+
+            if (entity == null) {return null;}
+            return entity;
+
         }
 
         

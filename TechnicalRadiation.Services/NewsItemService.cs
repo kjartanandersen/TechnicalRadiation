@@ -45,14 +45,37 @@ namespace TechnicalRadiation.Services
             var authorIds = _newsItemRepository.GetAllAuthorIdByNewsItemId(entity.Id).ToList();
             var categoryIds = _categoryRepository.GetAllCategoriesIdByNewsItemId(entity.Id).ToList();
             
-            entity.Links.AddReference("self", $"api/{entity.Id}");
-            entity.Links.AddReference("edit", $"api/{entity.Id}");
-            entity.Links.AddReference("delete", $"api/{entity.Id}");
+            entity.Links.AddReference("self", new { href =  $"api/{entity.Id}"});
+            entity.Links.AddReference("edit", new { href =  $"api/{entity.Id}"});
+            entity.Links.AddReference("delete", new { href =  $"api/{entity.Id}"});
             authorIds.ForEach(s => {
-                entity.Links.AddReference("authors", $"api/authors/{s}");
+                entity.Links.AddReference("authors", new { href =  $"api/authors/{s}"});
             });
             categoryIds.ForEach(s => {
-                entity.Links.AddReference("categories", $"api/authors/{s}");
+                entity.Links.AddReference("categories", new { href =  $"api/authors/{s}"});
+            });
+
+            return entity;
+        }
+
+        public IEnumerable<NewsItemDto> GetAllNewsItemsByAuthorId(int authorId)
+        {
+            var entity = _newsItemRepository.GetAllNewsItemsByAuthorId(authorId).ToList();
+
+            entity.ForEach(r => {
+                var authorIds = _newsItemRepository.GetAllAuthorIdByNewsItemId(r.Id).ToList();
+                var categoryIds = _categoryRepository.GetAllCategoriesIdByNewsItemId(r.Id).ToList();
+                
+                r.Links.AddReference("self", new {href =  $"api/{r.Id}"});
+                r.Links.AddReference("edit", new { href =  $"api/{r.Id}"});
+                r.Links.AddReference("delete", new { href =  $"api/{r.Id}"});
+                authorIds.ForEach(s => {
+                    r.Links.AddReference("authors", new { href =  $"api/authors/{s}"});
+                });
+                categoryIds.ForEach(s => {
+                    r.Links.AddReference("categories", new { href =  $"api/authors/{s}"});
+                });
+                
             });
 
             return entity;
