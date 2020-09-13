@@ -51,5 +51,20 @@ namespace TechnicalRadiation.Services
             return _authorRepository.CreateAuthor(author);
         }
 
+        public void UpdateAuthorById(AuthorInputModel author, int id)
+        {
+            _authorRepository.UpdateAuthorById(author, id);
+        }
+
+        public void DeleteAuthorById(int id)
+        {
+            _authorRepository.DeleteAuthorById(id);
+        }
+
+        public void CreateNewsItemAuthorLink(int authorId, int newsItemId)
+        {
+            _authorRepository.CreateNewsItemAuthorLink(authorId, newsItemId);
+        }
+
     }
 }
