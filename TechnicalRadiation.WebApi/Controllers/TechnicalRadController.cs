@@ -5,6 +5,7 @@ using TechnicalRadiation.Models.Entities;
 using TechnicalRadiation.Models.InputModels;
 using TechnicalRadiation.Services;
 using TechnicalRadiation.Models.ThirdParty;
+using TechnicalRadiation.Repositories.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,8 @@ namespace TechnicalRadiation.WebApi.Controllers
         private NewsItemService _newsItemService = new NewsItemService();
         private CategoryService _categoryService = new CategoryService();
         private AuthorService _authorService = new AuthorService();
+        
+
 
         // Unauthorized routes
 
@@ -36,7 +39,7 @@ namespace TechnicalRadiation.WebApi.Controllers
 
         // https://localhost:5001/api/1 [GET]
         [HttpGet]
-        [Route("{id:int}")]
+        [Route("{id:int}", Name = "GetNewsById")]
 
         public IActionResult GetNewsById(int id)
         {
@@ -58,7 +61,7 @@ namespace TechnicalRadiation.WebApi.Controllers
 
         // https://localhost:5001/api/categories [GET]
         [HttpGet]
-        [Route("categories/{id:int}")]
+        [Route("categories/{id:int}", Name = "GetCategoryById")]
 
         public IActionResult GetCategoryById(int id)
         {
@@ -106,18 +109,32 @@ namespace TechnicalRadiation.WebApi.Controllers
         [HttpPost]
         [Route("")]
 
-        public IActionResult CreateNewsItem([FromBody] NewsItemInputModel news)
+        public IActionResult CreateNewsItem([FromBody] NewsItemInputModel body)
         {
-            return Ok();
+            if (!ModelState.IsValid) {return StatusCode(412, body);}
+            var authKey = Request.Headers["Authorization"].ToString();
+            if (authKey == DataProvider.GetAdminPass())
+            {
+                var entity = _newsItemService.CreateNewsItem(body);
+                return CreatedAtRoute("GetNewsById", new {id = entity.Id}, null);
+            }
+            
+            return StatusCode(401, "User not authorized");
         }
 
         // https://localhost:5001/api/1 [PUT]
-        [HttpPost]
+        [HttpPut]
         [Route("{id:int}")]
 
-        public IActionResult UpdateNewsItem(int id, [FromBody] NewsItemInputModel news)
+        public IActionResult UpdateNewsItem(int id, [FromBody] NewsItemInputModel body)
         {
-            return Ok();
+            var authKey = Request.Headers["Authorization"].ToString();
+            if (authKey == DataProvider.GetAdminPass())
+            {
+                _newsItemService.UpdateNewsItemById(body, id);
+                return NoContent();
+            }
+            return StatusCode(401, "User not authorized");
         }
 
         // https://localhost:5001/api/1 [DELETE]
@@ -126,7 +143,13 @@ namespace TechnicalRadiation.WebApi.Controllers
 
         public IActionResult DeleteNewsItem(int id)
         {
-            return Ok();
+            var authKey = Request.Headers["Authorization"].ToString();
+            if (authKey == DataProvider.GetAdminPass())
+            {
+                _newsItemService.DeleteNewsItemById(id);
+                return NoContent();
+            }
+            return StatusCode(401, "User not authorized");
         }
 
         // Create, update and delete categories
@@ -136,18 +159,31 @@ namespace TechnicalRadiation.WebApi.Controllers
         [HttpPost]
         [Route("categories")]
 
-        public IActionResult CreateCategoryItem([FromBody] CategoryInputModel category)
+        public IActionResult CreateCategoryItem([FromBody] CategoryInputModel body)
         {
-            return Ok();
+            if (!ModelState.IsValid) {return StatusCode(412, body);}
+            var authKey = Request.Headers["Authorization"].ToString();
+            if (authKey == DataProvider.GetAdminPass())
+            {
+                var NextId = _categoryService.CreateCategory(body);
+                return CreatedAtRoute("GetCategoryById", new {id = NextId}, null);
+            }
+            return StatusCode(401, "User not authorized");
         }
 
         // https://localhost:5001/api/categories/1 [PUT]
         [HttpPut]
         [Route("categories/{id:int}")]
 
-        public IActionResult UpdateCategoryItem(int id, [FromBody] CategoryInputModel news)
+        public IActionResult UpdateCategoryItem(int id, [FromBody] CategoryInputModel body)
         {
-            return Ok();
+            var authKey = Request.Headers["Authorization"].ToString();
+            if (authKey == DataProvider.GetAdminPass())
+            {
+                _categoryService.UpdateCategoryById(body, id);
+                return NoContent();
+            }
+            return StatusCode(401, "User not authorized");
         }
 
         // https://localhost:5001/api/categories/1 [DELETE]
@@ -156,7 +192,13 @@ namespace TechnicalRadiation.WebApi.Controllers
 
         public IActionResult DeleteCategoryItem(int id)
         {
-            return Ok();
+            var authKey = Request.Headers["Authorization"].ToString();
+            if (authKey == DataProvider.GetAdminPass())
+            {
+                _categoryService.DeleteCategoryById(id);
+                return NoContent();
+            }
+            return StatusCode(401, "User not authorized");
         }
 
         // https://localhost:5001/api/categories/1/newsItems/1 [POST]
@@ -165,7 +207,13 @@ namespace TechnicalRadiation.WebApi.Controllers
         
         public IActionResult CreateCategoryNewsLink(int categoryId, int newsItemId)
         {
-            return Ok();
+            var authKey = Request.Headers["Authorization"].ToString();
+            if (authKey == DataProvider.GetAdminPass())
+            {
+                _categoryService.CreateNewsItemCategoryLink(categoryId, newsItemId);
+                return NoContent();
+            }
+            return StatusCode(401, "User not authorized");
         }
 
         // Create update and delete authors
@@ -174,16 +222,23 @@ namespace TechnicalRadiation.WebApi.Controllers
         [HttpPost]
         [Route("authors")]
 
-        public IActionResult CreateAuthorItem([FromBody] AuthorInputModel category)
+        public IActionResult CreateAuthorItem([FromBody] AuthorInputModel body)
         {
-            return Ok();
+            if (!ModelState.IsValid) {return StatusCode(412, body);}
+            var authKey = Request.Headers["Authorization"].ToString();
+            if (authKey == DataProvider.GetAdminPass())
+            {
+                var NextId = _authorService.CreateAuthor(body);
+                return CreatedAtRoute("GetCategoryById", new {id = NextId}, null);
+            }
+            return StatusCode(401, "User not authorized");
         }
 
         // https://localhost:5001/api/authors/1 [PUT]
         [HttpPut]
         [Route("authors/{id:int}")]
 
-        public IActionResult UpdateAuthorItem(int id, [FromBody] AuthorInputModel news)
+        public IActionResult UpdateAuthorItem(int id, [FromBody] AuthorInputModel body)
         {
             return Ok();
         }

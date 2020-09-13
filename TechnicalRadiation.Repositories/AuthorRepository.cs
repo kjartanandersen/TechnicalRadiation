@@ -11,6 +11,7 @@ namespace TechnicalRadiation.Repositories
 {
     public class AuthorRepository
     {
+        private readonly string _authorName = DataProvider.GetAdminName();
         public IEnumerable<int> GetAllNewsitemIdByAuthorId(int authorId)
         {
             return DataProvider.NIA.Where(r => r.AuthorId == authorId)
@@ -46,6 +47,36 @@ namespace TechnicalRadiation.Repositories
             var entity = ToAuthorDetailDto(DataProvider.Authors.FirstOrDefault(r => r.Id == id));
             if (entity == null) {return null;}
             return entity;
+        }
+
+        public int CreateAuthor(AuthorInputModel author)
+        {
+            var nextId = DataProvider.Authors.Max(r => r.Id)+1;
+
+            var entity = new Author
+            {
+                Id = nextId,
+                Name = author.Name,
+                ProfileImgSource = author.ProfileImgSource,
+                Bio = author.Bio,
+                ModifiedBy = _authorName,
+                CreatedDate = DateTime.Now,
+                ModifiedDate = DateTime.Now
+            };
+            DataProvider.Authors.Add(entity);
+            return nextId;
+
+        }
+
+        public void CreateNewsItemAuthorLink(int authorId, int newsItemId)
+        {
+            var entity = new NewsItemAuthors
+            {
+                AuthorId = authorId,
+                NewsItemId = newsItemId
+            };
+
+            DataProvider.NIA.Add(entity);
         }
     }
 }

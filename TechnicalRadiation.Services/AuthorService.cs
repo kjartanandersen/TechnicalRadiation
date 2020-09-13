@@ -46,5 +46,10 @@ namespace TechnicalRadiation.Services
             return entity;
         }
 
+        public int CreateAuthor(AuthorInputModel author)
+        {
+            return _authorRepository.CreateAuthor(author);
+        }
+
     }
 }

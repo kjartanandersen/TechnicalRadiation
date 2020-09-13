@@ -72,6 +72,57 @@ namespace TechnicalRadiation.Repositories
 
         }
 
+        public NewsItemDetailDto CreateNewsItem(NewsItemInputModel newsItem)
+        {
+            var nextId = DataProvider.NewsItems.Max(r => r.Id)+1;
+            var entity = new NewsItem
+            {
+                Id = nextId,
+                Title = newsItem.Title,
+                ImgSource = newsItem.ImgSource,
+                ShortDescription = newsItem.ShortDescription,
+                LongDescription = newsItem.LongDescription,
+                PublishDate = newsItem.PublishDate,
+                CreatedDate = DateTime.Now,
+                ModifiedDate = DateTime.Now
+            };
+            DataProvider.NewsItems.Add(entity);
+            return new NewsItemDetailDto 
+            {
+                Id = entity.Id,
+                Title = entity.Title,
+                ImgSource = entity.ImgSource,
+                ShortDescription = entity.ShortDescription,
+                LongDescription = entity.LongDescription,
+                PublishDate = entity.PublishDate
+            }; 
+        }
+
+        public void UpdateNewsItemById(NewsItemInputModel newsItem, int id)
+        {
+            var entity = DataProvider.NewsItems.FirstOrDefault(r => r.Id == id);
+
+            if (entity == null) {return;}
+
+            entity.Title = newsItem.Title;
+            entity.ImgSource = newsItem.ImgSource;
+            entity.ShortDescription = newsItem.ShortDescription;
+            entity.LongDescription = newsItem.LongDescription;
+            entity.PublishDate = newsItem.PublishDate;
+            entity.ModifiedDate = DateTime.Now;
+
+        }
+
+        public void DeleteNewsItemById(int id)
+        {
+            var entity = DataProvider.NewsItems.FirstOrDefault(r => r.Id == id);
+
+            if (entity == null) {return;}
+            DataProvider.NewsItems.Remove(entity);
+
+        }
+
+        
         
     }
 }

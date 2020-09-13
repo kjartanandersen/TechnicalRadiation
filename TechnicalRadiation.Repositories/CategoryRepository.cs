@@ -11,6 +11,7 @@ namespace TechnicalRadiation.Repositories
 {
     public class CategoryRepository
     {
+        private readonly string _adminName = DataProvider.GetAdminName();
         //Convert Category to CategoryDto
         private CategoryDto ToCategoryDto(Category item)
         {
@@ -55,6 +56,55 @@ namespace TechnicalRadiation.Repositories
             var entity = DataProvider.Categories.FirstOrDefault(r => r.Id == categoryId);
             if (entity == null) {return null;}
             return ToCategoryDetailDto(entity);
+        }
+
+        public int CreateCategory(CategoryInputModel category)
+        {
+            var nextId = DataProvider.Categories.Max(r => r.Id)+1;
+            var slugString = category.Name.ToLower().Replace(' ', '-');
+            var entity = new Category
+            {
+                Id = nextId,
+                Name = category.Name,
+                Slug = slugString,
+                CreatedDate = DateTime.Now,
+                ModifiedDate = DateTime.Now,
+                ModifiedBy = _adminName
+            };
+            DataProvider.Categories.Add(entity);
+            return nextId;
+        }
+
+        public void UpdateCategoryById(CategoryInputModel category, int id)
+        {
+            var entity = DataProvider.Categories.FirstOrDefault(r => r.Id == id);
+            if (entity == null) {return;}
+            var slugString = category.Name.ToLower().Replace(' ', '-');
+
+            entity.Name = category.Name;
+            entity.Slug = slugString;
+            entity.ModifiedDate = DateTime.Now;
+            entity.ModifiedBy = _adminName;
+        }
+
+        public void DeleteCategory(int id)
+        {
+            var entity = DataProvider.Categories.FirstOrDefault(r => r.Id == id);
+
+            if (entity == null) {return;}
+            DataProvider.Categories.Remove(entity);
+
+        }
+
+        public void CreateNewsItemCategoryLink(int categoryId, int newsItemId)
+        {
+            var entity = new NewsItemCategories
+            {
+                CategoryId = categoryId,
+                NewsItemId = newsItemId
+            };
+
+            DataProvider.NIC.Add(entity);
         }
     }
 }

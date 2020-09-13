@@ -7,9 +7,13 @@ namespace TechnicalRadiation.Repositories.Data
     public class DataProvider
     {
         private static readonly string _adminName = "TechnicalRadiationAdmin";
+        private static readonly string _adminPass = "smashthestate";
 
         // public static List<Entity> Entities = new List<Entity> {}
         // dummy data for Authors
+        public static string GetAdminPass() => _adminPass;
+        public static string GetAdminName() => _adminName;
+        
         public static List<Author> Authors = new List<Author> 
         {
             new Author
